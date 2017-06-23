@@ -15,13 +15,21 @@ public enum ScrollDirection{
 }
 
 
-public protocol QPageViewControllerDelegate: class {
+@objc public protocol QPageViewControllerDelegate: class {
 
-    func pageViewController(pageViewController: QPageViewController, willMoveFrom: UIViewController, to: UIViewController)
+    @objc optional func pageViewController(pageViewController: QPageViewController, willMoveFrom: UIViewController, to: UIViewController)
 
-    func pageViewController(pageViewController: QPageViewController, isMovingFrom: UIViewController, to: UIViewController, progress: Double)
+    @objc optional func pageViewController(pageViewController: QPageViewController, isMovingFrom: UIViewController, to: UIViewController, progress: Double)
 
-    func pageViewController(pageViewController: QPageViewController, didMoveFrom: UIViewController, to: UIViewController, finished: Bool)
+    @objc optional func pageViewController(pageViewController: QPageViewController, didMoveFrom: UIViewController, to: UIViewController, finished: Bool)
+}
+
+extension QPageViewControllerDelegate {
+    func pageViewController(pageViewController: QPageViewController, willMoveFrom: UIViewController, to: UIViewController) { }
+
+    func pageViewController(pageViewController: QPageViewController, isMovingFrom: UIViewController, to: UIViewController, progress: Double) { }
+
+    func pageViewController(pageViewController: QPageViewController, didMoveFrom: UIViewController, to: UIViewController, finished: Bool) { }
 }
 
 public protocol QPageViewControllerDataSource: class {
