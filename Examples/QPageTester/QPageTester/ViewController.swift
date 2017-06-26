@@ -46,11 +46,14 @@ extension UIColor {
 class SingleViewController: UIViewController{
 
     public static var nextNumber = 0
+
+    let number: Int;
     let numberLabel = UILabel()
 
     init() {
+        number = SingleViewController.nextNumber
         super.init(nibName: nil, bundle: nil)
-        numberLabel.text = "\(SingleViewController.nextNumber)"
+        numberLabel.text = "\(number)"
         SingleViewController.nextNumber += 1
     }
     
@@ -74,12 +77,23 @@ class SingleViewController: UIViewController{
 class ViewController: QPageViewController, QPageViewControllerDataSource, QPageViewControllerDelegate {
 
 
+    var timer: Timer?
     var controllers = [SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController()]
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+
+        timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(timedAction), userInfo: nil, repeats: true)
+        RunLoop.main.add(timer!, forMode: RunLoopMode.commonModes)
+
         self.dataSource = self
+        self.delegate = self
         self.reloadAll()
+    }
+
+    func timedAction(){
+        print("timedAction")
+        //self.scrollTo(controller: controllers[3])
     }
 
     override func didReceiveMemoryWarning() {
@@ -99,6 +113,14 @@ class ViewController: QPageViewController, QPageViewControllerDataSource, QPageV
             return controllers[0]
         }
         return controllers.itemPositionedAt(item: controller, advancedBy: -1)
+    }
+
+
+    func pageViewController(pageViewController: QPageViewController, didMove fromController: UIViewController, toController: UIViewController, finished: Bool) {
+        guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
+            return
+        }
+        print("Moved FromController \(fromController.number) ToController \(toController.number) ")
     }
 
 }
