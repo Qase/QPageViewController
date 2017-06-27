@@ -41,24 +41,42 @@ open class QPageViewController: UIViewController {
     public weak var delegate: QPageViewControllerDelegate?
     public weak var dataSource: QPageViewControllerDataSource?
 
-    
-    public var extraControllers: [UIViewController] = []
-    public func getController() -> UIViewController {
-        return extraControllers.removeFirst()
+    public var smartCacheEnabled = true
+    public var automaticcallyCompleteUserDrag = false
+    public var cachedControllers: [UIViewController] = []
+    public var progressLimit:CGFloat = 0.55
+    public var preloadAdjacentControllers = true
+
+    private func getCachedController() -> UIViewController? {
+        if  cachedControllers.count > 0 {
+            return cachedControllers.removeFirst()
+        }
+        return nil
+    }
+
+    public func reusableController<T:UIViewController>() -> T {
+        var retController : T
+        if let controller = self.getCachedController() as? T {
+            retController = controller
+        }
+        else{
+            retController = T()
+        }
+        return retController
     }
 
 
 
-    public var preloadAdjacentControllers = true
+
     public var isScrollEnabled = true {
         didSet {
             self.scrollView.isScrollEnabled = isScrollEnabled
         }
     }
 
-    public var progressLimit:CGFloat = 0.55
 
-    fileprivate(set) weak var currentViewController: UIViewController? {
+
+    fileprivate(set) var currentViewController: UIViewController? {
         didSet {
             guard let oldValue = oldValue, let currentViewController = currentViewController else {
                 return
@@ -69,10 +87,9 @@ open class QPageViewController: UIViewController {
     }
 
 
-    fileprivate(set) weak var nextViewControler: UIViewController?
-    fileprivate(set) weak var previousViewControler: UIViewController?
+    fileprivate(set) var nextViewControler: UIViewController?
+    fileprivate(set) var previousViewControler: UIViewController?
     fileprivate var shoudReloadAdjacent = false
-
     fileprivate var inUserDrag = false
     fileprivate(set) var isScrolling = false
 
@@ -112,7 +129,7 @@ open class QPageViewController: UIViewController {
         self.previousViewControler?.view.frame = CGRect(x: 0, y: 0, width: viewWidth, height: viewHeight)
         self.currentViewController?.view.frame = CGRect(x: viewWidth, y: 0, width: viewWidth, height: viewHeight)
         self.nextViewControler?.view.frame = CGRect(x: viewWidth * 2, y: 0, width: viewWidth, height: viewHeight)
-        print("layoutSubviews")
+        //print("layoutSubviews")
     }
 
     fileprivate func isOneOfControllers(controller: UIViewController) -> Bool {
@@ -157,11 +174,13 @@ open class QPageViewController: UIViewController {
             self.removeChild(viewController: self.nextViewControler)
             self.addChild(viewController: controller)
             self.nextViewControler = controller
+            self.layoutSubviews()
             scrollToNext()
         case .backward:
             self.removeChild(viewController: self.previousViewControler)
             self.addChild(viewController: controller)
             self.previousViewControler = controller
+            self.layoutSubviews()
             scrollToPrevious()
         }
     }
@@ -177,7 +196,7 @@ open class QPageViewController: UIViewController {
     }
 
     public func reloadAdjacent(){
-
+        //print("reloadAdjacent start")
         self.removeChild(viewController: self.nextViewControler )
         self.removeChild(viewController: self.previousViewControler)
 
@@ -186,6 +205,7 @@ open class QPageViewController: UIViewController {
 
         self.addChild(viewController: nextViewControler)
         self.addChild(viewController: previousViewControler)
+        //print("reloadAdjacent end")
     }
 
     public func reloadAll(){
@@ -203,22 +223,33 @@ open class QPageViewController: UIViewController {
     // MARK Views
     fileprivate func addChild(viewController: UIViewController?){
         guard let viewController = viewController else {
+            //print(currentViewController)
             return
         }
+        //print("addChild")
         self.addChildViewController(viewController)
-
         viewController.beginAppearanceTransition(true, animated: false)
         self.scrollView.addSubview(viewController.view)
         viewController.endAppearanceTransition()
-
-
         viewController.didMove(toParentViewController: self)
+        if self.smartCacheEnabled {
+            cachedControllers = cachedControllers.filter{ $0 != viewController }
+        }
+
     }
 
     fileprivate func removeChild(viewController: UIViewController?){
-        viewController?.view.removeFromSuperview()
-        viewController?.didMove(toParentViewController: nil)
-        viewController?.removeFromParentViewController()
+        guard let viewController = viewController else {
+            return
+        }
+        //print("removeChild")
+        viewController.view.removeFromSuperview()
+        viewController.didMove(toParentViewController: nil)
+        viewController.removeFromParentViewController()
+        if self.smartCacheEnabled {
+            cachedControllers.append(viewController)
+        }
+
     }
 
     fileprivate var prevProgress: CGFloat = 0.0
@@ -243,7 +274,9 @@ extension QPageViewController: UIScrollViewDelegate{
 
         var aboveLimit = false
 
+
         if progress <= -progressLimit{
+            //print("centerScrollViewIfNeeded start")
             self.removeChild(viewController: self.nextViewControler)
             self.nextViewControler = self.currentViewController
             self.currentViewController = self.previousViewControler
@@ -254,6 +287,7 @@ extension QPageViewController: UIScrollViewDelegate{
             aboveLimit = true
         }
         else if progress >= progressLimit{
+            //print("centerScrollViewIfNeeded start")
             self.removeChild(viewController: self.previousViewControler)
             self.previousViewControler = self.currentViewController
             self.currentViewController = self.nextViewControler
@@ -264,22 +298,24 @@ extension QPageViewController: UIScrollViewDelegate{
             aboveLimit = true
         }
 
-        if aboveLimit {
+        if (automaticcallyCompleteUserDrag  && aboveLimit) ||
+            (!automaticcallyCompleteUserDrag && aboveLimit && !self.inUserDrag) {
+            //print("centerScrollViewIfNeeded end")
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.1, delay: 0, options: [.curveLinear, .curveEaseOut], animations: {
                     self.centerScrollView()
                 }, completion: { (finished) in
-                    print("scrollViewDidEndDecelerating Animation End distance \(self.distance) progress \(self.progress)")
-                    guard let currentViewController = self.currentViewController else{
-                        return
-                    }
-                    self.scrollView.isScrollEnabled = true
-                    self.isScrolling = false
+                    //print("scrollViewDidEndDecelerating Animation End distance \(self.distance) progress \(self.progress)")
                     if self.shoudReloadAdjacent{
                         self.reloadAdjacent()
                     }
+                    self.layoutSubviews()
+                    self.scrollView.isScrollEnabled = true
+                    self.isScrolling = false
+                    guard let currentViewController = self.currentViewController else{
+                        return
+                    }
                     self.delegate?.pageViewController?(pageViewController: self, endedMove: currentViewController)
-                    
                 })
                 
             }
@@ -287,7 +323,7 @@ extension QPageViewController: UIScrollViewDelegate{
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        print("scrollViewDidScroll distance \(distance) progress \(progress)")
+        //print("scrollViewDidScroll distance \(distance) progress \(progress)")
         centerScrollViewIfNeeded()
         let startingController: UIViewController? = self.currentViewController
         var targetController: UIViewController?
@@ -305,17 +341,17 @@ extension QPageViewController: UIScrollViewDelegate{
     }
 
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        print("scrollViewWillBeginDragging distance \(distance) progress \(progress)")
+        //print("scrollViewWillBeginDragging distance \(distance) progress \(progress)")
         inUserDrag = true
     }
 
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        print("scrollViewDidEndDragging distance \(distance) progress \(progress)")
+        //print("scrollViewDidEndDragging distance \(distance) progress \(progress)")
         inUserDrag = false
     }
 
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        print("scrollViewDidEndDecelerating distance \(distance) progress \(progress)")
+        //print("scrollViewDidEndDecelerating distance \(distance) progress \(progress)")
         self.scrollView.isScrollEnabled = true
     }
 

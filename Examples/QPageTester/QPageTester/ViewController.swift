@@ -40,6 +40,18 @@ extension UIColor {
     }
 }
 
+class SingleModel {
+    public static var nextNumber = 0
+    public let number: Int = {
+        let ret = nextNumber
+        nextNumber+=1
+        return ret
+    }()
+    public let color: UIColor = .random()
+
+
+}
+
 
 
 
@@ -47,14 +59,26 @@ class SingleViewController: UIViewController{
 
     public static var nextNumber = 0
 
-    let number: Int;
+    public var model: SingleModel? {
+        didSet{
+            guard let model = model else{
+                return
+            }
+            self.numberLabel.text = "\(model.number)"
+            self.view.backgroundColor = model.color
+
+        }
+    }
+
+    override var description: String{
+        return "SingleViewController \(model!.number)"
+    }
+
     let numberLabel = UILabel()
 
     init() {
-        number = SingleViewController.nextNumber
         super.init(nibName: nil, bundle: nil)
-        numberLabel.text = "\(number)"
-        SingleViewController.nextNumber += 1
+        print("SingleViewController")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -63,7 +87,6 @@ class SingleViewController: UIViewController{
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .random()
         self.view.addSubview(numberLabel)
         numberLabel.snp.makeConstraints { (make) in
             make.center.equalToSuperview()
@@ -76,9 +99,18 @@ class SingleViewController: UIViewController{
 
 class ViewController: QPageViewController, QPageViewControllerDataSource, QPageViewControllerDelegate {
 
-
     var timer: Timer?
-    var controllers = [SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController()]
+    //var controllers = [SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController()]
+//    var currentControllerInt = 0
+//
+//    func nextController(model: SingleModel) -> SingleViewController {
+//        currentControllerInt = (currentControllerInt + 1)%controllers.count
+//        controllers[currentControllerInt].model = model
+//        return controllers[currentControllerInt]
+//    }
+
+    var model = [SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel()]
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -88,12 +120,18 @@ class ViewController: QPageViewController, QPageViewControllerDataSource, QPageV
 
         self.dataSource = self
         self.delegate = self
+        //self.extraControllers = [SingleViewController(),SingleViewController(),SingleViewController(),SingleViewController()]
         self.reloadAll()
     }
 
     func timedAction(){
-        print("timedAction")
-        //self.scrollTo(controller: controllers[3])
+//        print(" ")
+//        print("timedAction")
+//
+//        let controller:SingleViewController = self.reusableController()
+//        controller.model = model[3]
+//
+//        self.scrollTo(controller: controller)
     }
 
     override func didReceiveMemoryWarning() {
@@ -101,26 +139,62 @@ class ViewController: QPageViewController, QPageViewControllerDataSource, QPageV
         // Dispose of any resources that can be recreated.
     }
 
-    func pageViewController(pageViewController: QPageViewController, controllerAfter controller: UIViewController?) -> UIViewController? {
-        guard let controller = controller as? SingleViewController else {
-            return controllers[0]
+//    private func reusableController(){
+//        var retController : SingleViewController
+//        if let controller = self.getController() as? SingleViewController {
+//            retController = controller
+//        }
+//        else{
+//            retController = SingleViewController()
+//        }
+//        return retController
+//    }
+
+
+    func nextModel(currentModel: SingleModel) -> SingleModel{
+        if currentModel.number == model.last!.number{
+            return model.first!
         }
-        return controllers.itemPositionedAt(item: controller, advancedBy: 1)
+        return model[currentModel.number+1]
+    }
+
+    func prevModel(currentModel: SingleModel) -> SingleModel{
+        if currentModel.number == 0{
+            return model.last!
+        }
+        return model[currentModel.number-1]
+    }
+
+    func pageViewController(pageViewController: QPageViewController, controllerAfter controller: UIViewController?) -> UIViewController? {
+        let retController:SingleViewController = reusableController()
+
+        guard let controller = controller as? SingleViewController, let currentModel = controller.model else {
+            retController.model = model[0]
+            return retController
+        }
+
+        retController.model = self.nextModel(currentModel: currentModel)
+        return retController
+
     }
 
     func pageViewController(pageViewController: QPageViewController, controllerBefore controller: UIViewController?) -> UIViewController? {
-        guard let controller = controller as? SingleViewController else {
-            return controllers[0]
+        let retController:SingleViewController = reusableController()
+
+        guard let controller = controller as? SingleViewController, let currentModel = controller.model else {
+            retController.model = model[0]
+            return retController
         }
-        return controllers.itemPositionedAt(item: controller, advancedBy: -1)
+
+        retController.model = self.prevModel(currentModel: currentModel)
+        return retController
     }
 
-
-    func pageViewController(pageViewController: QPageViewController, didMove fromController: UIViewController, toController: UIViewController, finished: Bool) {
+    func pageViewController(pageViewController: QPageViewController, didMove fromController: UIViewController?, toController: UIViewController?) {
         guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
             return
         }
-        print("Moved FromController \(fromController.number) ToController \(toController.number) ")
+        print("Moved FromController \(fromController.model?.number) ToController \(toController.model?.number) ")
     }
 
 }
