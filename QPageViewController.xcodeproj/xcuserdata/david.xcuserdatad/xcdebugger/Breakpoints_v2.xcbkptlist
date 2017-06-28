@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QPageViewController/QPageViewController.swift"
-            timestampString = "519751966.918038"
+            timestampString = "520348693.644989"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "14"
-            endingLineNumber = "14"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
             landmarkName = "ScrollDirection"
             landmarkType = "13">
          </BreakpointContent>

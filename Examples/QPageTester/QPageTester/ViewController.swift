@@ -109,7 +109,10 @@ class ViewController: QPageViewController {
 //        return controllers[currentControllerInt]
 //    }
 
-    var model = [SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel()]
+    var model = [SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),
+                 SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),
+                 SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel(),SingleModel()
+                 ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -220,7 +223,7 @@ extension ViewController: QPageViewControllerDelegate{
         guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
             return
         }
-        //print("isMoving FromController \(String(describing: fromController.model?.number)) ToController \(String(describing: toController.model?.number)) progress \(progress)")
+        print("isMoving FromController \(String(describing: fromController.model?.number)) ToController \(String(describing: toController.model?.number)) progress \(progress)")
     }
 
 }
@@ -246,6 +249,7 @@ class OrigViewController: UIPageViewController, UIPageViewControllerDelegate, UI
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        print("viewControllerBefore")
         guard let controller = viewController as? SingleViewController else {
             return controllers[0]
         }
@@ -253,6 +257,7 @@ class OrigViewController: UIPageViewController, UIPageViewControllerDelegate, UI
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        print("viewControllerAfter")
         guard let controller = viewController as? SingleViewController else {
             return controllers[0]
         }
