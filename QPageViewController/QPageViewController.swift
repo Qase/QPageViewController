@@ -144,7 +144,7 @@ open class QPageViewController: UIViewController {
 
 
     /// ViewController in center of PageViewController
-    fileprivate(set) var currentViewController: UIViewController? {
+    fileprivate(set) public var currentViewController: UIViewController? {
         didSet {
             guard let oldValue = oldValue, let currentViewController = currentViewController else {
                 return
@@ -156,9 +156,9 @@ open class QPageViewController: UIViewController {
     }
 
     /// ViewController on the right side from Center ViewController
-    fileprivate(set) var nextViewControler: UIViewController?
+    fileprivate(set) public var nextViewControler: UIViewController?
     /// ViewController on the left side from Center ViewController
-    fileprivate(set) var previousViewControler: UIViewController?
+    fileprivate(set) public var previousViewControler: UIViewController?
 
     /// If true adjacent viewcontrollers are reloaded on trasition end (used by scrollTo)
     fileprivate var shoudReloadAdjacent = false
