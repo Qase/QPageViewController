@@ -13,7 +13,10 @@ public enum ScrollDirection{
     case forward
     case backward
 }
-
+//        guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
+//            return
+//        }
+//        print("Moved FromController \(fromController.model?.number) ToController \(toController.model?.number) ")
 
 @objc public protocol QPageViewControllerDelegate: class {
 
@@ -83,6 +86,7 @@ open class QPageViewController: UIViewController {
             }
 
             self.delegate?.pageViewController?(pageViewController: self, didMove: oldValue, toController: currentViewController)
+            self.prevProgress = -self.prevProgress
         }
     }
 
@@ -92,6 +96,7 @@ open class QPageViewController: UIViewController {
     fileprivate var shoudReloadAdjacent = false
     fileprivate var inUserDrag = false
     fileprivate(set) var isScrolling = false
+    fileprivate var prevProgress: CGFloat = 0.0
 
     fileprivate lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -251,8 +256,6 @@ open class QPageViewController: UIViewController {
         }
 
     }
-
-    fileprivate var prevProgress: CGFloat = 0.0
 }
 
 extension QPageViewController: UIScrollViewDelegate{
@@ -273,7 +276,6 @@ extension QPageViewController: UIScrollViewDelegate{
         let progress = self.progress
 
         var aboveLimit = false
-
 
         if progress <= -progressLimit{
             //print("centerScrollViewIfNeeded start")
@@ -328,6 +330,7 @@ extension QPageViewController: UIScrollViewDelegate{
         let startingController: UIViewController? = self.currentViewController
         var targetController: UIViewController?
 
+
         isScrolling = true
 
         if progress < 0 {
@@ -336,7 +339,13 @@ extension QPageViewController: UIScrollViewDelegate{
         else {
             targetController = self.nextViewControler
         }
+        if (prevProgress >= 0 && progress < 0) || (prevProgress <= 0 && progress > 0) {
+            self.delegate?.pageViewController?(pageViewController: self, willMove: startingController, toController: targetController)
+        }
+
         self.delegate?.pageViewController?(pageViewController: self, isMoving: startingController, toController: targetController, progress: progress)
+
+        self.prevProgress = progress
 
     }
 
@@ -353,6 +362,11 @@ extension QPageViewController: UIScrollViewDelegate{
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         //print("scrollViewDidEndDecelerating distance \(distance) progress \(progress)")
         self.scrollView.isScrollEnabled = true
+        if progress == 0.0 {
+                self.delegate?.pageViewController?(pageViewController: self, endedMove: currentViewController!)
+        }
+
+
     }
 
 }
