@@ -127,7 +127,7 @@ class ViewController: QPageViewController {
         self.reloadAll()
     }
 
-    func timedAction(){
+    @objc func timedAction(){
 //        print(" ")
 //        print("timedAction")
 //
@@ -171,7 +171,8 @@ class ViewController: QPageViewController {
 }
 
 extension ViewController: QPageViewControllerDataSource{
-    func pageViewController(pageViewController: QPageViewController, controllerAfter controller: UIViewController?) -> UIViewController? {
+    
+    func pageViewController(_ pageViewController: QPageViewController, controllerAfter controller: UIViewController?) -> UIViewController? {
         let retController:SingleViewController = reusableController()
 
         guard let controller = controller as? SingleViewController, let currentModel = controller.model else {
@@ -184,7 +185,7 @@ extension ViewController: QPageViewControllerDataSource{
 
     }
 
-    func pageViewController(pageViewController: QPageViewController, controllerBefore controller: UIViewController?) -> UIViewController? {
+    func pageViewController(_ pageViewController: QPageViewController, controllerBefore controller: UIViewController?) -> UIViewController? {
         let retController:SingleViewController = reusableController()
 
         guard let controller = controller as? SingleViewController, let currentModel = controller.model else {
@@ -198,28 +199,28 @@ extension ViewController: QPageViewControllerDataSource{
 }
 
 extension ViewController: QPageViewControllerDelegate{
-    func pageViewController(pageViewController: QPageViewController, didMove fromController: UIViewController?, toController: UIViewController?) {
+    func pageViewController(_ pageViewController: QPageViewController, didMove fromController: UIViewController?, toController: UIViewController?) {
         guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
             return
         }
         print("didMove FromController \(String(describing: fromController.model?.number)) ToController \(String(describing: toController.model?.number)) ")
     }
 
-    func pageViewController(pageViewController: QPageViewController, endedMove onController: UIViewController) {
+    func pageViewController(_ pageViewController: QPageViewController, endedMove onController: UIViewController) {
         guard let onController = onController as? SingleViewController else {
             return
         }
         print("endedMove  \(String(describing: onController.model?.number)) ")
     }
 
-    func pageViewController(pageViewController: QPageViewController, willMove fromController: UIViewController?, toController: UIViewController?) {
+    func pageViewController(_ pageViewController: QPageViewController, willMove fromController: UIViewController?, toController: UIViewController?) {
         guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
             return
         }
         print("willMove FromController \(String(describing: fromController.model?.number)) ToController \(String(describing: toController.model?.number)) ")
     }
 
-    func pageViewController(pageViewController: QPageViewController, isMoving fromController: UIViewController?, toController: UIViewController?, progress: CGFloat) {
+    func pageViewController(_ pageViewController: QPageViewController, isMoving fromController: UIViewController?, toController: UIViewController?, progress: CGFloat) {
         guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
             return
         }
