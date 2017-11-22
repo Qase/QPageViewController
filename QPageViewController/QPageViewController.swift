@@ -438,7 +438,7 @@ extension QPageViewController: UIScrollViewDelegate {
         var aboveLimit = false
         
         if progress <= -progressLimit {
-            //print("centerScrollViewIfNeeded start")
+            print("centerScrollViewIfNeeded below \(progress)")
             self.removeChild(self.nextViewControler)
             self.nextViewControler = self.currentViewController
             self.currentViewController = self.previousViewControler
@@ -448,7 +448,7 @@ extension QPageViewController: UIScrollViewDelegate {
             scrollView.setContentOffset(CGPoint(x: distance*(2-progressLimit), y: 0), animated: false)
             aboveLimit = true
         } else if progress >= progressLimit {
-            //print("centerScrollViewIfNeeded start")
+            print("centerScrollViewIfNeeded above \(progress)")
             self.removeChild(self.previousViewControler)
             self.previousViewControler = self.currentViewController
             self.currentViewController = self.nextViewControler
@@ -461,18 +461,10 @@ extension QPageViewController: UIScrollViewDelegate {
         
         if (automaticcallyCompleteUserDrag  && aboveLimit) ||
             (!automaticcallyCompleteUserDrag && aboveLimit && !self.scrollView.isDragging) {
-            
-            //DispatchQueue.main.async {
-            //            UIView.animate(withDuration: 0.1, delay: 0, options: [.curveLinear, .curveEaseOut], animations: {
-            //                self.centerScrollView()
-            //            }, completion: { (completed) in
-            //                //print("scrollViewDidEndDecelerating Animation End distance \(self.distance) progress \(self.progress)")
-            //                if completed {
+            print("automaticcallyCompleteUserDrag \(progress)")
+            self.cancelTouchEvents()
             self.centerScrollView(animated: true)
-            //                }
-            //
-            //            })
-            //}
+            //self.cancelTouchEvents()
         }
     }
     

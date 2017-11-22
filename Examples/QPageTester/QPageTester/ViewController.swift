@@ -203,6 +203,7 @@ extension ViewController: QPageViewControllerDelegate{
         guard let fromController = fromController as? SingleViewController, let toController = toController as? SingleViewController else {
             return
         }
+        self.title = "\(toController.model?.number ?? 999)"
         print("didMove FromController \(String(describing: fromController.model?.number)) ToController \(String(describing: toController.model?.number)) ")
     }
 
