@@ -12,6 +12,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		559D06011FC5CC45009395CF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		63E3F48A1EFAC7A50062704F /* QPageViewController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QPageViewController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E3F48D1EFAC7A50062704F /* QPageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QPageViewController.h; sourceTree = "<group>"; };
 		63E3F48E1EFAC7A50062704F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -51,6 +52,7 @@
 				63E3F48D1EFAC7A50062704F /* QPageViewController.h */,
 				63E3F48E1EFAC7A50062704F /* Info.plist */,
 				63E3F4951EFAC82F0062704F /* QPageViewController.swift */,
+				559D06011FC5CC45009395CF /* README.md */,
 			);
 			path = QPageViewController;
 			sourceTree = "<group>";
