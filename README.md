@@ -4,6 +4,8 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![](https://img.shields.io/github/release/Qase/QPageViewController.svg?style=flat-square)](https://github.com/lukaskubanek/LoremSwiftum/releases)
 [![](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square "License")](LICENSE.md)
+[![codebeat badge](https://codebeat.co/badges/7acb4504-7c0c-4c56-b72e-383ba8268df7)](https://codebeat.co/projects/github-com-qase-qpageviewcontroller-master-3f1df7e6-4a93-4e3a-9b89-61e38fa67797)
+
 
 # QPageViewController
 
