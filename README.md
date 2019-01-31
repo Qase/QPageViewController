@@ -5,6 +5,7 @@
 [![Release](https://img.shields.io/github/release/qase/QPageViewController.svg?style=flat)](https://github.com/Qase/QPageViewController/releases/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codebeat badge](https://codebeat.co/badges/7acb4504-7c0c-4c56-b72e-383ba8268df7)](https://codebeat.co/projects/github-com-qase-qpageviewcontroller-master-3f1df7e6-4a93-4e3a-9b89-61e38fa67797)
+[![Qase: QPageViewController](https://img.shields.io/badge/Qase-QuantiLogger-ff69b4.svg)](https://github.com/Qase/QPageViewController)
 
 
 
