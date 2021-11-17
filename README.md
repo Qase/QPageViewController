@@ -8,7 +8,7 @@
 [![Qase: QPageViewController](https://img.shields.io/badge/Qase-QuantiLogger-ff69b4.svg)](https://github.com/Qase/QPageViewController)
 
 
-
+**⚠️ QPageViewController is deprecated. Quanti does not use UIKit, but uses SwiftUI instead.⚠️**
 
 # QPageViewController
 
